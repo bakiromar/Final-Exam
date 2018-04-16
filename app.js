@@ -1,6 +1,8 @@
 const express = require('express');
 const request = require('request');
 
+const port = process.env.PORT || 8080;
+
 var app = express();
 var weather = '';
 
