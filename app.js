@@ -19,8 +19,8 @@ app.get('/weather', (request, response) => {
     response.send(weather);
 });
 
-app.listen(port, () => {
-    console.log('Server is up on the port 8080');
+/*app.listen(port, () => {
+    console.log('Server is up on the port 8080');*/
     request({
         url: 'http://maps.googleapis.com/maps/api/geocode/json' +
             '?address=Dubai',
@@ -45,4 +45,7 @@ app.listen(port, () => {
             });
         }
     });
+
+app.listen(port, () => {
+    console.log(`Server is up on the port ${port}`);
 });
