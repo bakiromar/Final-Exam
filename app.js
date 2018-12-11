@@ -5,7 +5,7 @@ const port = process.env.PORT || 8080;
 
 var app = express();
 
-const apiKey = 'd83784ed16c7685325cf63998023793c';
+const apiKey = '2ed60f9d15496837a2bbcc37218fd5cd';
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -20,10 +20,6 @@ app.get('/', (request, response) => {
         '<a href="/weather">Weather</a>');
 });
 
-/*app.get('/weather', (request, response) => {
-    response.send(weather);
-});*/
-
 app.get('/weather', function (req, res) {
   res.render('index', {weather: null, error: null});
 })
@@ -31,9 +27,6 @@ app.get('/weather', function (req, res) {
 app.post('/weather', function (req, res) {
   let city = req.body.city;
   let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`
-  //test code
-  //res.render('index');
-  //console.log(req.body.city);
     request(url, function (err, response, body) {
     if(err){
       res.render('index', {weather: null, error: 'Error, please try again'});
