@@ -4,7 +4,12 @@ const request = require('request');
 const port = process.env.PORT || 8080;
 
 var app = express();
-var weather = '';
+
+const apiKey = 'd83784ed16c7685325cf63998023793c';
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.set('view engine', 'ejs')
 
 app.use(express.static(__dirname + '/public'));
 
@@ -15,36 +20,34 @@ app.get('/', (request, response) => {
         '<a href="/weather">Weather</a>');
 });
 
-app.get('/weather', (request, response) => {
+/*app.get('/weather', (request, response) => {
     response.send(weather);
-});
+});*/
 
-/*app.listen(port, () => {
-    console.log('Server is up on the port 8080');*/
-    request({
-        url: 'http://maps.googleapis.com/maps/api/geocode/json' +
-            '?address=Dubai',
-        json: true
-    }, (error, response, body) => {
-        if (error) {
-           console.log('Cannot connect to Google Maps');
-        } else if (body.status === 'ZERO_RESULTS') {
-            console.log('Cannot find requested address');
-        } else if (body.status === 'OK') {
-            var latitude = body.results[0].geometry.location.lat;
-            var longitude = body.results[0].geometry.location.lng;
-            request({
-                url: `https://api.darksky.net/forecast/a05801ddfd47bee6dbc2b05a8877b901/${latitude},${longitude}`,
-                json: true
-            }, (error, response, body) => {
-                if (!error && response.statusCode === 200) {
-                    weather = `The temperature in Dubai is ${body.currently.temperature} and is ${ body.currently.summary}`;
-                } else {
-                    console.log(body.error);
-                };
-            });
-        }
-    });
+app.get('/weather', function (req, res) {
+  res.render('index', {weather: null, error: null});
+})
+
+app.post('/weather', function (req, res) {
+  let city = req.body.city;
+  let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`
+  //test code
+  //res.render('index');
+  //console.log(req.body.city);
+    request(url, function (err, response, body) {
+    if(err){
+      res.render('index', {weather: null, error: 'Error, please try again'});
+    } else {
+      let weather = JSON.parse(body)
+      if(weather.main == undefined){
+        res.render('index', {weather: null, error: 'Error, please try again'});
+      } else {
+        let weatherText = `It's ${weather.main.temp} degrees in ${weather.name}!`;
+        res.render('index', {weather: weatherText, error: null});
+      }
+    }
+  });
+})
 
 app.listen(port, () => {
     console.log(`Server is up on the port ${port}`);
